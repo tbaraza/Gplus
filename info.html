@@ -11,11 +11,17 @@
                     if (data.Circles.items === undefined) {
                         $(".circles").append("<p><b>Your circle needs people</b></p>")
                     } else {
-                        for (i = 0; i < data.Circles.items.length; i++ ) {
-                            for (j = 0; j < data.People.items.length; j++ ) {
-                                $(".circles").append("<h2>"+ data.Circles.items[i].displayName + "<h2>")
-                                $(".circles").append("<img src=" + data.People.items[j].image.url + ">")
-                                $(".circles").append("<p> Display Name: "+ data.People.items[j].displayName + "<p>")
+                        for (i = 0; i < data.Circles.items.length; i++ ) { 
+                            $(".circles").append("<h2>"+ data.Circles.items[i].displayName + "<h2>")
+                            var circle = data.Circles.items[i].displayName
+                            var peeps = data.PeopleInCircle[circle][0].items
+                            if (data.PeopleInCircle[circle][0].items === undefined) {
+                                $(".circles").append("<p><b>Your " +  circle + " circle has no people</b></p>")
+                            } else {
+                                for (j = 0; j < data.PeopleInCircle[circle][0].items.length; j++ ) {
+                                $(".circles").append("<img src=" + data.PeopleInCircle[circle][0].items[j].image.url + ">")
+                                $(".circles").append("<p> Display Name: "+ data.PeopleInCircle[circle][0].items[j].displayName + "<p>")
+                                }
                             }
                         }
                     }
