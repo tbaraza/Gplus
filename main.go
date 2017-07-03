@@ -50,7 +50,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "welcome home") //data sent to client side
 }
 
-// googleLogin handles handling redirection to google service login
+// googleLogin handles redirection to google service login
 func googleLogin(w http.ResponseWriter, r *http.Request) {
 	url := oauthConfig.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
@@ -133,7 +133,7 @@ func handleInfoDisplay(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error occured while fetching activities", err)
 	}
 
-	// get a list the circles assicoated with the user
+	// get a list of circles assicoated with the user
 	data.Circles, err = plusDomainService.Circles.List("me").Do()
 	if err != nil {
 		log.Println("Error occured while fetching circles", err)
