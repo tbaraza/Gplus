@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>User Information</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                var data = {{ . }};
+                console.log('data', data)
+                $("button").click(function() {
+                    $(".circles").html("<h2>"+data.Circles.title+"</h2>");
+                    if (data.Circles.items === undefined) {
+                        $(".circles").append("<p><b>Your circle needs people</b></p>")
+                    } else {
+                        for (i = 0; i < data.Circles.items.length; i++ ) {
+                            for (j = 0; j < data.People.items.length; j++ ) {
+                                $(".circles").append("<h2>"+ data.Circles.items[i].displayName + "<h2>")
+                                $(".circles").append("<img src=" + data.People.items[j].image.url + ">")
+                                $(".circles").append("<p> Display Name: "+ data.People.items[j].displayName + "<p>")
+                            }
+                        }
+                    }
+                })
+            });
+        </script>
+    </head>
+    <body>
+        <h2>User Info</h2>
+        <img src="{{.UserInfo.Image.Url}}"/>
+        <p>Name: {{.UserInfo.DisplayName}}</p>
+        <p>Profile Link: {{.UserInfo.Url}}</p>
+        <button type="button">My circles</button>
+        <div class="circles"></div>
+        <h2>{{ .Activities.Kind }}</h2>
+        {{range .Activities.Items}}
+            <p>{{ .Title }}</p>
+        {{ end }}
+    </body>
+</html>
