@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"os"
+
 	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -15,8 +17,8 @@ import (
 
 var (
 	oauthConfig = &oauth2.Config{
-		ClientID:     "137566482663-pf3gl293a569tiqao8hfearldgcpcfv7.apps.googleusercontent.com",
-		ClientSecret: "f0ZYHC_IOr26LM6RrIBNeVgn",
+		ClientID:     os.Getenv("CLIENT_ID"),
+		ClientSecret: os.Getenv("CLIENT_SECRET"),
 		Endpoint:     google.Endpoint,
 		RedirectURL:  "http://localhost:9091/googleAuth",
 		Scopes: []string{
@@ -28,15 +30,15 @@ var (
 			"https://www.googleapis.com/auth/plus.circles.read",
 		},
 	}
-	oauthStateString  = "hgvgvjubvgtcr"
+	oauthStateString  = "gfdrswqrfcAWED"
 	googleUserInfoURL = "https://www.googleapis.com/plus/v1/people/me?access_token="
-	store             = sessions.NewCookieStore([]byte("SECRET"))
+	store             = sessions.NewCookieStore([]byte(os.Getenv("SECRET")))
 )
 
 // home handles rendering of home page
 func home(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "session-name")
-	if err == nil && session.Values["access-token"] != nil {
+	session, err := store.Get(r, "sessionName")
+	if err == nil && session.Values["accessToken"] != nil {
 		http.Redirect(w, r, "/info", http.StatusTemporaryRedirect)
 		return
 	}
@@ -58,7 +60,7 @@ func googleLogin(w http.ResponseWriter, r *http.Request) {
 
 // hadleGoogleCallback handles the authentication data received from google
 func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "session-name")
+	session, err := store.Get(r, "sessionName")
 	if err != nil {
 		log.Println("An error occured when fetching the session ", err)
 	}
@@ -83,15 +85,15 @@ func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the user is already authenticated
-	storedToken := session.Values["access-token"]
-	log.Println("token", session.Values["access-token"])
+	storedToken := session.Values["accessToken"]
+	log.Println("token", session.Values["accessToken"])
 
 	if storedToken != nil {
 		log.Println("user already authenticated")
 	}
 
 	// save for use later
-	session.Values["access-token"] = token.AccessToken
+	session.Values["accessToken"] = token.AccessToken
 	session.Save(r, w)
 	http.Redirect(w, r, "/info", http.StatusTemporaryRedirect)
 }
@@ -105,13 +107,13 @@ func handleInfoDisplay(w http.ResponseWriter, r *http.Request) {
 		UserInfo       plusdomains.Person
 		PeopleInCircle map[string][]*plusdomains.PeopleFeed
 	}
-	session, err := store.Get(r, "session-name")
-	if err != nil || session.Values["access-token"] == nil {
+	session, err := store.Get(r, "sessionName")
+	if err != nil || session.Values["accessToken"] == nil {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
-	token := session.Values["access-token"].(string)
+	token := session.Values["accessToken"].(string)
 	log.Println("token", token)
 
 	client := oauthConfig.Client(oauth2.NoContext, &oauth2.Token{AccessToken: token})
@@ -163,13 +165,9 @@ func handleInfoDisplay(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error occured when parsing file")
 	}
 
-	log.Println("Data: ", data)
-
 	err = t.Execute(w, data)
-
-	log.Printf("Errror occurred %v", err)
-
 }
+
 func main() {
 	http.HandleFunc("/", home) // setting the router to home handler
 	http.HandleFunc("/googleLogin", googleLogin)

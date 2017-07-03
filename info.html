@@ -5,7 +5,6 @@
         <script>
             $(document).ready(function() {
                 var data = {{ . }};
-                console.log('data', data)
                 $("button").click(function() {
                     $(".circles").html("<h2>"+data.Circles.title+"</h2>");
                     if (data.Circles.items === undefined) {
