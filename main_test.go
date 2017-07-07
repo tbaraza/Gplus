@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -87,7 +86,6 @@ func TestGoogleCallbackHandlerRedirectsOnTokenExchangeError(t *testing.T) {
 	if responseRecorder.Code != http.StatusTemporaryRedirect {
 		t.Errorf("handler returned wrong status code: expected %v but got %v", http.StatusTemporaryRedirect, responseRecorder.Code)
 	}
-	log.Println(responseRecorder.Body.String())
 
 }
 
